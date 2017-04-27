@@ -1,0 +1,75 @@
+﻿<Window x:Class="ZuggerWpf.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About Zugger" SizeToContent="WidthAndHeight"
+    WindowStyle="None"
+    Loaded="Window_Loaded"
+    Activated="Window_Activated"
+    Background="{x:Null}"
+    AllowsTransparency="True"
+    ResizeMode="NoResize"
+    FontFamily="微软雅黑"
+    ShowInTaskbar="False"    
+    Icon="/Zugger;component/zugger.ico"
+    Width="250">
+    <Window.Resources>
+        <ResourceDictionary>
+            <LinearGradientBrush x:Key="bg" StartPoint="0, 0" EndPoint="0, 1">
+                <GradientStop Color="Gray" Offset="0"/>
+                <GradientStop Color="WhiteSmoke" Offset="1"/>
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Border CornerRadius="8">
+        <Border.Background>
+            <StaticResourceExtension ResourceKey="bg" />
+        </Border.Background>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Line X1="10" Y1="30" X2="190" Y2="30" Stroke="#FF4B4B4B" StrokeThickness="2">
+                    <Line.Effect>
+                        <DropShadowEffect/>
+                    </Line.Effect>
+                </Line>
+
+                <Label VerticalAlignment="Top" FontFamily="Bradley Hand ITC" FontSize="16" Foreground="WhiteSmoke" Content="Zugger">
+                    <Label.Effect>
+                        <DropShadowEffect/>
+                    </Label.Effect>
+                </Label>
+                <Image Name="btnClose"  HorizontalAlignment="Right" Margin="0,5,5,0" VerticalAlignment="Top" Width="16" Height="16" Stretch="Fill" Opacity="0.4" MouseUp="Close_Up" Source="/Zugger;component/Resources/closepic.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="0" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Name="lbVer" Grid.Row="0" Grid.Column="1" Foreground="DarkBlue">Zugger 1.5</TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1" ToolTip="有好的建议请与我联系">
+                    <Hyperlink>iwteih@hotmail.com</Hyperlink>
+                </TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="1" ToolTip="http://zugger.codeplex.com/">
+                    <Hyperlink NavigateUri="http://zugger.codeplex.com/" RequestNavigate="Hyperlink_RequestNavigate">访问项目网址</Hyperlink>
+                </TextBlock>
+                
+                <StackPanel Grid.Row="3" Grid.Column="1" Margin="5" >
+                    <Button Name="btnCheckUpdate" Click="btnCheckUpdate_Click">检查更新</Button>
+                    <TextBlock Name="lbUpdate" TextAlignment="Center" Margin="5" Foreground="Coral" Visibility="Collapsed">检测到新版本，可至上面项目网址升级</TextBlock>
+                </StackPanel>
+            </Grid>            
+        </Grid>
+    </Border>
+</Window>

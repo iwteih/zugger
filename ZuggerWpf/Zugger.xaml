@@ -1,0 +1,310 @@
+﻿<Window x:Class="ZuggerWpf.Zugger"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ZuggerWpf"
+    Name="frmzugger"
+    Title="Zugger"  SizeToContent="WidthAndHeight" AllowsTransparency="True" WindowStyle="None"
+    FontFamily="微软雅黑"
+    ResizeMode="NoResize"
+    WindowStartupLocation="Manual" Opacity=".7" ShowInTaskbar="False"
+    Left="{Binding Source={x:Static local:Properties.Settings.Default}, Path=MainWndLeft, Mode=TwoWay}"    
+    Top="{Binding Source={x:Static local:Properties.Settings.Default}, Path=MainWndTop, Mode=TwoWay}" 
+    Topmost="True" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded" Closed="Window_Closed"
+    KeyUp="frmzugger_KeyUp">
+    <Window.Resources>
+        <local:Count2Background x:Key="count2color"/>
+        <local:Date2Color x:Key="date2color"/>
+        <local:TaskDate2Color x:Key="taskdate2color"/>
+        <local:Datasource2Visible x:Key="datasource2Visible"/>
+        <local:HeightConverter x:Key="heightconvert"/>
+        <local:Bool2Visible x:Key="bool2vis"/>
+
+        <Style x:Key="listBoxItemMouseOver" TargetType="ListBoxItem">
+            <Style.Resources>
+                <!--SelectedItem with focus-->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#40BF4D"/>
+                <!--SelectedItem without focus-->
+                <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="LightBlue" Opacity=".4"/>-->
+            </Style.Resources>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#DDEFBA" Offset="0"/>
+                                <GradientStop Color="#94CD54" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value ="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Window.ContextMenu>
+        <ContextMenu Name="menu">
+            <MenuItem Header="选项" Click="MenuItemOption_Click"/>            
+            <MenuItem Header="关于" Click="MenuItemAbout_Click"/>
+            <MenuItem Header="退出" Click="MenuItemClose_Click"/>
+        </ContextMenu>
+    </Window.ContextMenu>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Name="pnItems" Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
+                <Label Name="lbOpenedByMeBugCount" Content="{Binding Count}" Background="LightPink" 
+                   FontSize="18" FontWeight="Bold" ToolTip="我开的Bug数" MouseDoubleClick="lbOpenedByMeBugCount_MouseDoubleClick"/>
+                <Line X1="0" Y1="0" X2="{Binding ElementName=lbOpenedByMeBugCount, Path=ActualWidth}" Y2="0" StrokeThickness="3" 
+                      Stroke="OrangeRed" Visibility="{Binding ElementName=openedBymeList, Path=Visibility}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Label Name="lbBugCount" Content="{Binding Count}" Background="{Binding Count, Converter={StaticResource count2color}}" 
+                   FontSize="18" FontWeight="Bold" ToolTip="Bug数" MouseDoubleClick="lbBugCount_MouseDoubleClick" MouseUp="Label_MouseUp"/>
+                <Line X1="0" Y1="0" X2="{Binding ElementName=lbBugCount, Path=ActualWidth}" Y2="0" StrokeThickness="3" 
+                      Stroke="OrangeRed" Visibility="{Binding ElementName=bugList, Path=Visibility}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Label Name="lbTaskCount" Content="{Binding Count}" Background="LightBlue" 
+                   FontSize="18" FontWeight="Bold" ToolTip="Task数" MouseDoubleClick="lbTaskCount_MouseDoubleClick" MouseUp="Label_MouseUp"/>
+                <Line X1="0" Y1="0" X2="{Binding ElementName=lbTaskCount, Path=ActualWidth}" Y2="0" StrokeThickness="3" 
+                      Stroke="OrangeRed" Visibility="{Binding ElementName=taskList, Path=Visibility}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Label Name="lbStoryCount" Content="{Binding Count}" Background="LightGoldenrodYellow" 
+                   FontSize="18" FontWeight="Bold" ToolTip="需求数" MouseDoubleClick="lbStoryCount_MouseDoubleClick" MouseUp="Label_MouseUp"/>
+                <Line X1="0" Y1="0" X2="{Binding ElementName=lbStoryCount, Path=ActualWidth}" Y2="0" StrokeThickness="3" 
+                      Stroke="OrangeRed" Visibility="{Binding ElementName=storyList, Path=Visibility}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Name="listview" Grid.Row="1" Grid.Column="1" >
+
+            <!--openedBymeList列表-->
+            <ListBox Name="openedBymeList" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource listBoxItemMouseOver}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height, Converter={StaticResource heightconvert}, ConverterParameter=0.7}"
+                     Visibility="{Binding Converter={StaticResource datasource2Visible}}" KeyUp="ListBox_KeyUp">
+
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="编辑" Click="ItemEdit_Click"/>
+                        <MenuItem Header="复制" Click="CopyItem_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListBox.GroupStyle>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding Severity}" Grid.Row="0" Grid.Column="0"
+                                   ToolTip="严重程度"
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   Foreground="{Binding LastEdit, Converter={StaticResource date2color}}"/>
+                            <Label Content="{Binding ID}" Grid.Row="0" Grid.Column="1" 
+                                   ToolTip="ID"
+                                   MouseDoubleClick="Label_MouseDoubleClick"                                    
+                                   Foreground="{Binding LastEdit, Converter={StaticResource date2color}}"/>
+                            <Label Content="{Binding Title}" Grid.Row="0" Grid.Column="2"
+                                   ToolTip="标题"
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   Foreground="{Binding LastEdit, Converter={StaticResource date2color}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+            
+            
+            <!--bug列表-->
+            <ListBox Name="bugList" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource listBoxItemMouseOver}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height, Converter={StaticResource heightconvert}, ConverterParameter=0.7}"
+                     Visibility="{Binding Converter={StaticResource datasource2Visible}}" KeyUp="ListBox_KeyUp">
+
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="解决" Click="ResolveBug_Click"/>
+                        <MenuItem Header="编辑" Click="ItemEdit_Click"/>
+                        <MenuItem Header="复制" Click="CopyItem_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListBox.GroupStyle>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding Severity}" Grid.Row="0" Grid.Column="0"
+                                   ToolTip="严重程度"
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   Foreground="{Binding LastEdit, Converter={StaticResource date2color}}"/>
+                            <Label Content="{Binding ID}" Grid.Row="0" Grid.Column="1" 
+                                   ToolTip="ID"
+                                   MouseDoubleClick="Label_MouseDoubleClick"                                    
+                                   Foreground="{Binding LastEdit, Converter={StaticResource date2color}}"/>
+                            <Label Content="{Binding Title}" Grid.Row="0" Grid.Column="2"
+                                   ToolTip="标题"
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   Foreground="{Binding LastEdit, Converter={StaticResource date2color}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+
+            <!--task列表-->
+            <ListBox Name="taskList" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource listBoxItemMouseOver}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height, Converter={StaticResource heightconvert}, ConverterParameter=0.7}"
+                     Visibility="{Binding Converter={StaticResource datasource2Visible}}" KeyUp="ListBox_KeyUp">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="编辑" Click="ItemEdit_Click"/>
+                        <MenuItem Header="复制" Click="CopyItem_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1">
+                                </Border>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListBox.GroupStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding Priority}" Grid.Row="0" Grid.Column="0"  
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   ToolTip="优先级"
+                                   Foreground="{Binding Deadline, Converter={StaticResource taskdate2color}}"/>
+                            <Label Content="{Binding ID}" Grid.Row="0" Grid.Column="1" 
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   ToolTip="ID"
+                                   Foreground="{Binding Deadline, Converter={StaticResource taskdate2color}}"/>
+                            <Label Content="{Binding Title}" Grid.Row="0" Grid.Column="2" 
+                                   MouseDoubleClick="Label_MouseDoubleClick"  
+                                   ToolTip="标题"
+                                   Foreground="{Binding Deadline, Converter={StaticResource taskdate2color}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+
+            <!--需求列表-->
+            <ListBox Name="storyList" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource listBoxItemMouseOver}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height, Converter={StaticResource heightconvert}, ConverterParameter=0.7}"
+                     Visibility="{Binding Converter={StaticResource datasource2Visible}}" KeyUp="ListBox_KeyUp">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="编辑" Click="ItemEdit_Click"/>
+                        <MenuItem Header="复制" Click="CopyItem_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1">
+                                </Border>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListBox.GroupStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition>
+                                </RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{Binding Priority}" Grid.Row="0" Grid.Column="0"  
+                                   MouseDoubleClick="Label_MouseDoubleClick"
+                                   ToolTip="优先级"/>
+                            <Label Content="{Binding Stage}" Grid.Row="0" Grid.Column="1"  
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   ToolTip="阶段"/>
+                            <Label Content="{Binding ID}" Grid.Row="0" Grid.Column="2" 
+                                   MouseDoubleClick="Label_MouseDoubleClick" 
+                                   ToolTip="ID"/>
+                            <Label Content="{Binding Title}" Grid.Row="0" Grid.Column="3" 
+                                   MouseDoubleClick="Label_MouseDoubleClick"  
+                                   ToolTip="标题"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+
+        </Grid>
+    </Grid>
+</Window>
