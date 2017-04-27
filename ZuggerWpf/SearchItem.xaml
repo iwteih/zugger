@@ -1,0 +1,8 @@
+﻿<Window x:Class="ZuggerWpf.SearchItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="SearchItem" SizeToContent="WidthAndHeight" Topmost="True" KeyUp="Window_KeyUp" WindowStyle="None" ShowInTaskbar="False" Loaded="Window_Loaded">
+    <Grid>
+        <TextBox Name="txtItemId" MinWidth="100" MinHeight="20" KeyDown="txtItemId_KeyDown" TextChanged="txtItemId_TextChanged" />
+    </Grid>
+</Window>
