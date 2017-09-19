@@ -50,36 +50,39 @@ namespace ZuggerWpf
 
                             foreach (var j in jsArray)
                             {
-                                BugItem bi = new BugItem()
+                                if (j["status"].Value<string>() != "closed" && j["status"].Value<string>() != "resolved")
                                 {
-                                    priority = j["pri"].Value<string>()
+                                    BugItem bi = new BugItem()
+                                    {
+                                        priority = j["pri"].Value<string>()
                                     ,
-                                    Severity = j["severity"].Value<string>()
+                                        Severity = j["severity"].Value<string>()
                                     ,
-                                    ID = j["id"].Value<int>()
+                                        ID = j["id"].Value<int>()
                                     ,
-                                    Title = Util.EscapeXmlTag(j["title"].Value<string>())
+                                        Title = Util.EscapeXmlTag(j["title"].Value<string>())
                                     ,
-                                    OpenDate = j["openedDate"].Value<string>()
+                                        OpenDate = j["openedDate"].Value<string>()
                                     ,
-                                    LastEdit = j["lastEditedDate"].Value<string>()
+                                        LastEdit = j["lastEditedDate"].Value<string>()
                                     ,
-                                    Tip = "Bug"
-                                };
+                                        Tip = "Bug"
+                                    };
 
-                                if (!ItemCollectionBackup.Contains(bi.ID))
-                                {
-                                    NewItemCount = NewItemCount == 0 ? bi.ID : (NewItemCount > 0 ? -2 : NewItemCount - 1);
+                                    if (!ItemCollectionBackup.Contains(bi.ID))
+                                    {
+                                        NewItemCount = NewItemCount == 0 ? bi.ID : (NewItemCount > 0 ? -2 : NewItemCount - 1);
+                                    }
+
+                                    itemsList.Add(bi);
                                 }
-
-                                itemsList.Add(bi);                                
                             }
 
                             if (OnNewItemArrive != null
                                 && NewItemCount != 0)
                             {
                                 OnNewItemArrive(ItemType.Bug, NewItemCount);
-                            }                            
+                            }
                         }
 
                         isSuccess = true;
