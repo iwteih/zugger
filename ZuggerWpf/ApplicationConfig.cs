@@ -100,7 +100,7 @@ namespace ZuggerWpf
         {
             get
             {
-                return Util.URLCombine(pmsHost, IsPATH_INFORequest ? "bug-browse-{0}-openedByMe-1-id_desc-0-2147483647-1.json?a=1"
+                return Util.URLCombine(pmsHost, IsPATH_INFORequest ? "bug-browse-{0}-0-openedByMe-id_desc-0-2147483647.json?a=1"
                     : "?m=bug&f=browse&productID={0}&browseType=openedByMe&param=0&orderBy=id_desc&recTotal=0&recPerPage=2147483647&pageID=1&t=json");
             }          
         }

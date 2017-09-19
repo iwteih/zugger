@@ -71,7 +71,7 @@ namespace ZuggerWpf
                                 foreach (var j in jsArray)
                                 {
                                     //openedbyme 显示未关闭
-                                    if (j["status"].Value<string>() != "closed")
+                                    if (j["status"].Value<string>() != "closed" && j["status"].Value<string>() != "resolved")
                                     {
                                         BugItem bi = new BugItem()
                                         {
