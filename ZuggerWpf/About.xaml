@@ -59,10 +59,10 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Name="lbVer" Grid.Row="0" Grid.Column="1" Foreground="DarkBlue">Zugger 1.5</TextBlock>
                 <TextBlock Grid.Row="1" Grid.Column="1" ToolTip="有好的建议请与我联系">
-                    <Hyperlink>iwteih@hotmail.com</Hyperlink>
+                    <Hyperlink NavigateUri="mailto:iwteih@hotmail.com" RequestNavigate="Hyperlink_RequestNavigate">iwteih@hotmail.com</Hyperlink>
                 </TextBlock>
                 <TextBlock Grid.Row="2" Grid.Column="1" ToolTip="http://zugger.codeplex.com/">
-                    <Hyperlink NavigateUri="http://zugger.codeplex.com/" RequestNavigate="Hyperlink_RequestNavigate">访问项目网址</Hyperlink>
+                    <Hyperlink NavigateUri="https://github.com/iwteih/zugger/" RequestNavigate="Hyperlink_RequestNavigate">访问项目网址</Hyperlink>
                 </TextBlock>
                 
                 <StackPanel Grid.Row="3" Grid.Column="1" Margin="5" >

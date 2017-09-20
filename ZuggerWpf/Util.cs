@@ -33,7 +33,8 @@ namespace ZuggerWpf
 
     class Util
     {
-        static Regex VersionReg = new Regex(@"<td\s+id\s*=\s*""ReleaseName""\s+class\s*=\s*""ActivityData""\s*>\s*Zugger\s*(?<key>[\d\.]+)\s*</td>", RegexOptions.IgnoreCase);
+        //static Regex VersionReg = new Regex(@"<td\s+id\s*=\s*""ReleaseName""\s+class\s*=\s*""ActivityData""\s*>\s*Zugger\s*(?<key>[\d\.]+)\s*</td>", RegexOptions.IgnoreCase);
+        static Regex VersionReg = new Regex(@"<a href=.+>Zugger\s*(?<key>[\d\.]+)\s*</a>", RegexOptions.IgnoreCase);
 
         /// <summary>
         /// 判断是不是有更新，并返回最新的版本号
@@ -46,7 +47,7 @@ namespace ZuggerWpf
 
             latestVersion = null;
 
-            string content = WebTools.Download("http://zugger.codeplex.com");
+            string content = WebTools.Download("https://github.com/iwteih/zugger/releases");
 
             if (!string.IsNullOrEmpty(content))
             {
